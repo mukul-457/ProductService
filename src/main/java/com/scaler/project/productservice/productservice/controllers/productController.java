@@ -33,14 +33,15 @@ public class productController {
 
         return productService.createProduct(product);
     }
+
     @PutMapping("/replcae/{id}")
     public Product replaceProductById(@PathVariable("id") Long id , @RequestBody Product product){
         return new Product();
     }
 
-    @PatchMapping({"id"})
+    @PatchMapping("{id}")
     public Product updateProductById(@PathVariable("id") Long id, @RequestBody Product product){
-        return null;
+        return productService.updateProduct(id , product);
     }
 
     @DeleteMapping("{id}")
