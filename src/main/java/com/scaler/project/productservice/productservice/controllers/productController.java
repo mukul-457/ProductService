@@ -4,6 +4,9 @@ import com.scaler.project.productservice.productservice.ProductServiceApplicatio
 import com.scaler.project.productservice.productservice.models.Product;
 import com.scaler.project.productservice.productservice.services.ProductService;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -19,8 +22,12 @@ public class productController {
         this.productService = productService;
     }
     @GetMapping("{id}")
-    public Product getProductById(@PathVariable("id") Long id){
-        return productService.getProductById(id);
+    public ResponseEntity<Product> getProductById(@PathVariable("id") Long id){
+        try {
+            return new ResponseEntity<>(productService.getProductById(id), HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch (RuntimeException e){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping
@@ -46,8 +53,13 @@ public class productController {
 
     @DeleteMapping("{id}")
     public  Product deleteProductById(@PathVariable("id") Long id){
-        return new Product();
+        return productService.deleteProductById(id);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<String> handleException(){
+        System.out.println("something went wrong");
+        return new ResponseEntity<>("Some thing went wrong ", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
 

@@ -4,12 +4,16 @@ import com.scaler.project.productservice.productservice.dtos.FakeStoreProductDto
 import com.scaler.project.productservice.productservice.models.Category;
 import com.scaler.project.productservice.productservice.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpLogging;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpMessageConverterExtractor;
+import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
-
+import org.springframework.http.client.support.InterceptingHttpAccessor;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.logging.Log;
 
 @Service
 public class fakeProductService implements  ProductService{
@@ -28,7 +32,6 @@ public class fakeProductService implements  ProductService{
             return null;
         }
         return convertDtoToProduct(fakeStoreProductDto);
-
     }
 
     @Override
@@ -55,7 +58,18 @@ public class fakeProductService implements  ProductService{
 
     @Override
     public Product deleteProductById(Long id) {
-        return new Product();
+        RequestCallback requestCallback = restTemplate.acceptHeaderRequestCallback(FakeStoreProductDto.class);
+        Log logger = HttpLogging.forLogName(getClass());
+        HttpMessageConverterExtractor<FakeStoreProductDto> responseExtractor =
+                new HttpMessageConverterExtractor<>(FakeStoreProductDto.class,
+                        restTemplate.getMessageConverters());
+        FakeStoreProductDto deletedProduct=  restTemplate.execute(
+                "https://fakestoreapi.com/products/" + id,
+                HttpMethod.DELETE, requestCallback, responseExtractor);
+        if (deletedProduct == null) {
+            return null;
+        }
+        return convertDtoToProduct(deletedProduct);
     }
 
     @Override
@@ -66,7 +80,9 @@ public class fakeProductService implements  ProductService{
     @Override
     public Product updateProduct(Long id, Product product) {
         FakeStoreProductDto fakeStoreProductDto = convertProductToFakeStoreDto(product);
-        FakeStoreProductDto updatedProduct = restTemplate.patchForObject("https://fakestoreapi.com/products/" + id , fakeStoreProductDto , FakeStoreProductDto.class);
+        FakeStoreProductDto updatedProduct = restTemplate.patchForObject(
+                "https://fakestoreapi.com/products/" + id ,
+                fakeStoreProductDto , FakeStoreProductDto.class);
         return convertDtoToProduct(updatedProduct);
     }
 
