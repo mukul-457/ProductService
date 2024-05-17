@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpMessageConverterExtractor;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.client.support.InterceptingHttpAccessor;
+
+import java.lang.module.FindException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.logging.Log;
@@ -29,9 +30,10 @@ public class fakeProductService implements  ProductService{
     public Product getProductById(Long id) {
         FakeStoreProductDto fakeStoreProductDto = restTemplate.getForObject("https://fakestoreapi.com/products/" + id , FakeStoreProductDto.class);
         if (fakeStoreProductDto == null){
-            return null;
+            throw new FindException();
         }
         return convertDtoToProduct(fakeStoreProductDto);
+
     }
 
     @Override

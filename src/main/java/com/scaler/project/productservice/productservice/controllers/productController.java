@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.module.FindException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,11 +24,7 @@ public class productController {
     }
     @GetMapping("{id}")
     public ResponseEntity<Product> getProductById(@PathVariable("id") Long id){
-        try {
             return new ResponseEntity<>(productService.getProductById(id), HttpStatus.INTERNAL_SERVER_ERROR);
-        }catch (RuntimeException e){
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
     }
 
     @GetMapping
@@ -56,10 +53,10 @@ public class productController {
         return productService.deleteProductById(id);
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(FindException.class)
     public ResponseEntity<String> handleException(){
-        System.out.println("something went wrong");
-        return new ResponseEntity<>("Some thing went wrong ", HttpStatus.INTERNAL_SERVER_ERROR);
+        System.out.println("ERROR: Product Not Found");
+        return new ResponseEntity<>("Product you are looking for does not exist", HttpStatus.NOT_FOUND);
     }
 }
 
