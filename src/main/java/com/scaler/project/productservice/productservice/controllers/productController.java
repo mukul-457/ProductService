@@ -1,16 +1,12 @@
 package com.scaler.project.productservice.productservice.controllers;
-
-import com.scaler.project.productservice.productservice.ProductServiceApplication;
+import com.scaler.project.productservice.productservice.exceptions.ProductLimitReachedException;
 import com.scaler.project.productservice.productservice.models.Product;
 import com.scaler.project.productservice.productservice.services.ProductService;
-import lombok.Setter;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.module.FindException;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,7 +19,7 @@ public class productController {
         this.productService = productService;
     }
     @GetMapping("{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable("id") Long id){
+    public ResponseEntity<Product> getProductById(@PathVariable("id") Long id) throws ProductLimitReachedException {
             return new ResponseEntity<>(productService.getProductById(id), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

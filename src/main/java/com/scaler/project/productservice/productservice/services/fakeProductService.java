@@ -1,6 +1,7 @@
 package com.scaler.project.productservice.productservice.services;
 
 import com.scaler.project.productservice.productservice.dtos.FakeStoreProductDto;
+import com.scaler.project.productservice.productservice.exceptions.ProductLimitReachedException;
 import com.scaler.project.productservice.productservice.models.Category;
 import com.scaler.project.productservice.productservice.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,10 @@ public class fakeProductService implements  ProductService{
     }
 
     @Override
-    public Product getProductById(Long id) {
+    public Product getProductById(Long id) throws ProductLimitReachedException {
+        if (id > 20){
+            throw new ProductLimitReachedException("This store does not have more than 20 products");
+        }
         FakeStoreProductDto fakeStoreProductDto = restTemplate.getForObject("https://fakestoreapi.com/products/" + id , FakeStoreProductDto.class);
         if (fakeStoreProductDto == null){
             throw new FindException();
