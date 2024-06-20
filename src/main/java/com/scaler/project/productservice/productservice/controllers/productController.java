@@ -28,6 +28,7 @@ public class productController {
         return productService.getAllProducts();
     }
 
+
     @PostMapping
     public Product createProduct(@RequestBody Product product){
 
