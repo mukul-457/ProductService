@@ -1,12 +1,17 @@
 package com.scaler.project.productservice.productservice.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Setter
 @Getter
-public class Category {
-    private Long id;
+@Entity
+public class Category extends BaseModel {
     private String title;
-
+    @OneToMany
+    private List<Product> productList;
 }

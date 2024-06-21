@@ -20,7 +20,7 @@ public class productController {
     }
     @GetMapping("{id}")
     public ResponseEntity<Product> getProductById(@PathVariable("id") Long id) throws ProductLimitReachedException {
-            return new ResponseEntity<>(productService.getProductById(id), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(productService.getProductById(id), HttpStatus.OK);
     }
 
     @GetMapping
