@@ -7,8 +7,8 @@ import org.springframework.boot.autoconfigure.web.WebProperties;
 
 @Getter
 @Setter
-@Inheritance(strategy = InheritanceType.JOINED)
-@Entity(name = "jt_user")
+//@Inheritance(strategy = InheritanceType.JOINED)
+//@Entity(name = "jt_user")
 public class User {
     @Id
     private long id;

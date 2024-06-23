@@ -7,8 +7,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity (name = "st_instructor")
-@DiscriminatorValue(value = "2")
+//@Entity (name = "st_instructor")
+//@DiscriminatorValue(value = "2")
 public class Instructor extends User {
     private String module;
     private String batch;

@@ -41,17 +41,18 @@ public class selfProductService implements ProductService{
 
     @Override
     public Product createProduct(Product product) {
-        if (product.getCategory() == null ){
-            Category unknow_category = new Category();
-            unknow_category.setTitle("Unknown");
-            Category savedCategory  =  categoryRepo.save(unknow_category);
-            product.setCategory(savedCategory);
-        }else{
-            Category category = new Category();
-            category.setTitle(product.getCategory().getTitle());
-            Category savedCategory =  categoryRepo.save(category);
-            product.setCategory(savedCategory);
-        }
+        // BELOW BLOCK NOT NEEDED IF WE SELECT CASCADE TYPE AS PERSIST FOR CATEGORY COL OF PRODUCT ENTITY
+//        if (product.getCategory() == null ){
+//            Category unknown_category = new Category();
+//            unknown_category.setTitle("Unknown");
+//            Category savedCategory  =  categoryRepo.save(unknown_category);
+//            product.setCategory(savedCategory);
+//        }else{
+//            Category category = new Category();
+//            category.setTitle(product.getCategory().getTitle());
+//            Category savedCategory =  categoryRepo.save(category);
+//            product.setCategory(savedCategory);
+//        }
         return productRepo.save(product);
     }
 

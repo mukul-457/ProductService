@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity (name = "tpc_instructor")
+//@Entity (name = "tpc_instructor")
 public class Instructor extends User {
     private String module;
     private String batch;
