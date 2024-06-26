@@ -1,6 +1,7 @@
 package com.scaler.project.productservice.productservice.services;
 
 import com.scaler.project.productservice.productservice.exceptions.ProductLimitReachedException;
+import com.scaler.project.productservice.productservice.exceptions.ProductNotFoundException;
 import com.scaler.project.productservice.productservice.models.Category;
 import com.scaler.project.productservice.productservice.models.Product;
 import com.scaler.project.productservice.productservice.repos.CategoryRepo;
@@ -25,11 +26,14 @@ public class selfProductService implements ProductService{
         this.productRepo = productRepo;
     }
     @Override
-    public Product getProductById(Long id) throws ProductLimitReachedException {
+    public Product getProductById(Long id) throws ProductLimitReachedException, ProductNotFoundException {
+        if (id > 20L ){
+            throw new ProductLimitReachedException("This store does not have more than 20 products");
+        }
         Optional<Product> product  = productRepo.findById(id);
         if (product.isEmpty()){
             //throw new NoSuchElementException("Product not found");
-            throw new EntityNotFoundException("Product with given id Not found");
+            throw new ProductNotFoundException("Product with given id not found");
         }
         return product.get();
     }

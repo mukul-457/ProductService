@@ -1,11 +1,14 @@
 package com.scaler.project.productservice.productservice.controllers;
 import com.scaler.project.productservice.productservice.exceptions.ProductLimitReachedException;
+import com.scaler.project.productservice.productservice.exceptions.ProductNotFoundException;
 import com.scaler.project.productservice.productservice.models.Product;
 import com.scaler.project.productservice.productservice.services.ProductService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.PrinterAbortException;
 import java.lang.module.FindException;
 import java.util.List;
 
@@ -19,7 +22,7 @@ public class productController {
         this.productService = productService;
     }
     @GetMapping("{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable("id") Long id) throws ProductLimitReachedException {
+    public ResponseEntity<Product> getProductById(@PathVariable("id") Long id) throws ProductLimitReachedException , ProductNotFoundException {
             return new ResponseEntity<>(productService.getProductById(id), HttpStatus.OK);
     }
 
