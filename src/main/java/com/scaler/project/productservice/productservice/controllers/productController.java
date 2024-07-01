@@ -3,6 +3,7 @@ import com.scaler.project.productservice.productservice.exceptions.ProductLimitR
 import com.scaler.project.productservice.productservice.exceptions.ProductNotFoundException;
 import com.scaler.project.productservice.productservice.models.Product;
 import com.scaler.project.productservice.productservice.services.ProductService;
+import com.scaler.project.productservice.productservice.services.TokenService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +18,18 @@ import java.util.List;
 public class productController {
 
     private ProductService productService;
+    private TokenService tokenService;
 
-    public productController(ProductService productService){
+    public productController(ProductService productService, TokenService tokenService){
         this.productService = productService;
+        this.tokenService = tokenService;
     }
     @GetMapping("{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable("id") Long id) throws ProductLimitReachedException , ProductNotFoundException {
-            return new ResponseEntity<>(productService.getProductById(id), HttpStatus.OK);
+    public ResponseEntity<Product> getProductById(@PathVariable("id") Long id , @RequestHeader("token") String token) throws ProductLimitReachedException , ProductNotFoundException {
+        if (!tokenService.validateToken(token)){
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        }
+        return new ResponseEntity<>(productService.getProductById(id), HttpStatus.OK);
     }
 
     @GetMapping
