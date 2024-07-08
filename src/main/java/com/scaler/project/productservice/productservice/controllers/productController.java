@@ -25,10 +25,10 @@ public class productController {
         this.tokenService = tokenService;
     }
     @GetMapping("{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable("id") Long id , @RequestHeader("token") String token) throws ProductLimitReachedException , ProductNotFoundException {
-        if (!tokenService.validateToken(token)){
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-        }
+    public ResponseEntity<Product> getProductById(@PathVariable("id") Long id ) throws ProductLimitReachedException , ProductNotFoundException {
+//        if (!tokenService.validateToken(token)){
+//            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+//        }
         return new ResponseEntity<>(productService.getProductById(id), HttpStatus.OK);
     }
 
