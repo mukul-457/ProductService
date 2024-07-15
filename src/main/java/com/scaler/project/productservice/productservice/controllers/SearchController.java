@@ -3,8 +3,6 @@ package com.scaler.project.productservice.productservice.controllers;
 import com.scaler.project.productservice.productservice.dtos.SearchProductDto;
 import com.scaler.project.productservice.productservice.models.Product;
 import com.scaler.project.productservice.productservice.services.SearchService;
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,8 +11,11 @@ import java.util.List;
 @RequestMapping("/search")
 public class SearchController {
 
-    @Autowired
-    private  SearchService searchService;
+    private final SearchService searchService;
+
+    public SearchController(SearchService searchService) {
+        this.searchService = searchService;
+    }
 
     @PostMapping
     public List<Product> searchProduct(@RequestBody SearchProductDto searchProductDto) {
