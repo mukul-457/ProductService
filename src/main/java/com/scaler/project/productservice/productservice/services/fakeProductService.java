@@ -6,6 +6,8 @@ import com.scaler.project.productservice.productservice.exceptions.ProductNotFou
 import com.scaler.project.productservice.productservice.models.Category;
 import com.scaler.project.productservice.productservice.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpLogging;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
@@ -19,12 +21,15 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 
 @Service
+//@Primary
 public class fakeProductService implements  ProductService{
 
     private RestTemplate restTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public fakeProductService(RestTemplate restTemplate){
+    public fakeProductService(RestTemplate restTemplate, RedisTemplate<String, Object> redisTemplate){
+        this.redisTemplate = redisTemplate;
         this.restTemplate = restTemplate;
     }
 
@@ -33,10 +38,15 @@ public class fakeProductService implements  ProductService{
         if (id > 20){
             throw new ProductLimitReachedException("This store does not have more than 20 products");
         }
+        Product product = (Product) redisTemplate.opsForHash().get("PRODUCTS","PRODUCTS-" + id);
+        if (product != null){
+            return product;
+        }
         FakeStoreProductDto fakeStoreProductDto = restTemplate.getForObject("https://fakestoreapi.com/products/" + id , FakeStoreProductDto.class);
         if (fakeStoreProductDto == null){
             throw new ProductNotFoundException("Product with given id Not found");
         }
+        redisTemplate.opsForHash().put("PRODUCTS","PRODUCTS-" + id, convertDtoToProduct(fakeStoreProductDto));
         return convertDtoToProduct(fakeStoreProductDto);
 
     }

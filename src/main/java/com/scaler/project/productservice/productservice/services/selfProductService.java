@@ -9,6 +9,7 @@ import com.scaler.project.productservice.productservice.repos.ProductRepo;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,21 +21,28 @@ public class selfProductService implements ProductService{
 
     private ProductRepo productRepo;
     private CategoryRepo categoryRepo;
+    private RedisTemplate<String, Object> redisTemplate;
 
-    public  selfProductService(ProductRepo productRepo, CategoryRepo categoryRepo){
+    public  selfProductService(ProductRepo productRepo, CategoryRepo categoryRepo, RedisTemplate<String, Object> redisTemplate){
         this.categoryRepo = categoryRepo;
         this.productRepo = productRepo;
+        this.redisTemplate = redisTemplate;
     }
     @Override
     public Product getProductById(Long id) throws ProductLimitReachedException, ProductNotFoundException {
         if (id > 20L ){
             throw new ProductLimitReachedException("This store does not have more than 20 products");
         }
+        Product cacheProduct = (Product) redisTemplate.opsForHash().get("SELF-PRODUCTS", "SELF-PRODUCTS-" + id);
+        if (cacheProduct != null){
+            return cacheProduct;
+        }
         Optional<Product> product  = productRepo.findById(id);
         if (product.isEmpty()){
             //throw new NoSuchElementException("Product not found");
             throw new ProductNotFoundException("Product with given id not found");
         }
+        redisTemplate.opsForHash().put("SELF-PRODUCTS" ,"SELF-PRODUCTS-" +id, product.get());
         return product.get();
     }
 
