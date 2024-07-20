@@ -1,5 +1,6 @@
 package com.scaler.project.productservice.productservice.services;
 
+import com.scaler.project.productservice.productservice.dtos.UserDto;
 import com.scaler.project.productservice.productservice.exceptions.ProductLimitReachedException;
 import com.scaler.project.productservice.productservice.exceptions.ProductNotFoundException;
 import com.scaler.project.productservice.productservice.models.Category;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,15 +25,22 @@ public class selfProductService implements ProductService{
     private CategoryRepo categoryRepo;
     private RedisTemplate<String, Object> redisTemplate;
 
-    public  selfProductService(ProductRepo productRepo, CategoryRepo categoryRepo, RedisTemplate<String, Object> redisTemplate){
+    private RestTemplate  restTemplate;
+
+    public  selfProductService(ProductRepo productRepo, CategoryRepo categoryRepo, RedisTemplate<String, Object> redisTemplate, RestTemplate restTemplate){
         this.categoryRepo = categoryRepo;
         this.productRepo = productRepo;
         this.redisTemplate = redisTemplate;
+        this.restTemplate = restTemplate;
     }
     @Override
     public Product getProductById(Long id) throws ProductLimitReachedException, ProductNotFoundException {
         if (id > 20L ){
             throw new ProductLimitReachedException("This store does not have more than 20 products");
+        }
+        UserDto randomUser = restTemplate.getForObject("http://userservice/users/random", UserDto.class);
+        if (randomUser != null){
+            System.out.println(randomUser.getEmail());
         }
         Product cacheProduct = (Product) redisTemplate.opsForHash().get("SELF-PRODUCTS", "SELF-PRODUCTS-" + id);
         if (cacheProduct != null){
